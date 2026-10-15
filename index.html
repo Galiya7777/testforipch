@@ -1,0 +1,398 @@
+%%html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Итоговый тест по химии для географов</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1a5276;
+            border-bottom: 3px solid #2980b9;
+            padding-bottom: 10px;
+        }
+        .info {
+            background-color: #d6eaf8;
+            border-left: 5px solid #2980b9;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        .question {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        .question h3 {
+            margin-top: 0;
+            font-size: 1.05em;
+            color: #1a5276;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .options button {
+            width: 100%;
+            padding: 12px 15px;
+            text-align: left;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+        .options button:hover:not(:disabled) {
+            background-color: #e2e6ea;
+        }
+        .options button:disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            font-weight: bold;
+        }
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+        .feedback {
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        .feedback.correct-text { color: #155724; }
+        .feedback.wrong-text { color: #721c24; }
+        
+        #result-container, #blocked-container {
+            display: none;
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        #result-container h2 { color: #1a5276; }
+        #result-container p { font-size: 1.15em; }
+        #blocked-container {
+            border-top: 5px solid #e74c3c;
+        }
+        #blocked-container h2 { color: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <h1>Итоговый тест по химии</h1>
+    <div class="info">
+        <strong>Для студентов географического факультета</strong><br>
+        <strong>Темы:</strong> Основные классы неорганических соединений, строение атома, периодический закон, растворы, гидролиз, ОВР, комплексные соединения, неметаллы<br>
+        <strong>Инструкция:</strong> У вас <b>только одна попытка</b>. После завершения тест нельзя пройти заново. Выбирайте внимательно!
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <div id="result-container">
+        <h2>Тест завершен!</h2>
+        <p id="score-text"></p>
+        <p id="grade-text"></p>
+        <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 20px;">
+            Повторное прохождение недоступно. Если возникли технические проблемы — обратитесь к преподавателю.
+        </p>
+    </div>
+
+    <div id="blocked-container">
+        <h2>⛔ Вы уже проходили этот тест</h2>
+        <p>Повторная попытка невозможна.</p>
+        <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 20px;">
+            Если вы считаете, что это ошибка, обратитесь к преподавателю.
+        </p>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "1. Какое из перечисленных веществ относится к классу «основные оксиды»?",
+                options: [
+                    "CO2",
+                    "Na2O",
+                    "SO3",
+                    "Al2O3"
+                ],
+                correct: 1
+            },
+            {
+                q: "2. Какая формула соответствует амфотерному гидроксиду?",
+                options: [
+                    "NaOH",
+                    "H2SO4",
+                    "Zn(OH)2",
+                    "Ca(OH)2"
+                ],
+                correct: 2
+            },
+            {
+                q: "3. Что такое изотопы?",
+                options: [
+                    "Атомы одного элемента с разным числом нейтронов",
+                    "Атомы разных элементов с одинаковой массой",
+                    "Ионы одного элемента с разным зарядом",
+                    "Молекулы одного вещества с разной структурой"
+                ],
+                correct: 0
+            },
+            {
+                q: "4. Какое квантовое число характеризует форму электронной орбитали?",
+                options: [
+                    "Главное (n)",
+                    "Орбитальное (l)",
+                    "Магнитное (m)",
+                    "Спиновое (s)"
+                ],
+                correct: 1
+            },
+            {
+                q: "5. Кто сформулировал периодический закон?",
+                options: [
+                    "Джон Дальтон",
+                    "Дмитрий Менделеев",
+                    "Эрнест Резерфорд",
+                    "Нильс Бор"
+                ],
+                correct: 1
+            },
+            {
+                q: "6. Что такое насыщенный раствор?",
+                options: [
+                    "Раствор, в котором вещество больше не растворяется при данной температуре",
+                    "Раствор с очень высокой концентрацией",
+                    "Раствор, содержащий только одно вещество",
+                    "Раствор, который не проводит электрический ток"
+                ],
+                correct: 0
+            },
+            {
+                q: "7. Какая формула выражает массовую долю растворенного вещества?",
+                options: [
+                    "ω = m(в-ва) / m(р-ра)",
+                    "C = n / V",
+                    "pH = -lg[H+]",
+                    "π = C·R·T"
+                ],
+                correct: 0
+            },
+            {
+                q: "8. Что такое гидролиз соли?",
+                options: [
+                    "Взаимодействие ионов соли с водой, приводящее к изменению pH",
+                    "Разложение соли при нагревании",
+                    "Растворение соли в кислоте",
+                    "Образование осадка при смешивании растворов"
+                ],
+                correct: 0
+            },
+            {
+                q: "9. Какая среда будет в растворе соли Na2CO3?",
+                options: [
+                    "Кислая (pH < 7)",
+                    "Нейтральная (pH = 7)",
+                    "Щелочная (pH > 7)",
+                    "Зависит от температуры"
+                ],
+                correct: 2
+            },
+            {
+                q: "10. Какой процесс называется окислением?",
+                options: [
+                    "Отдача электронов",
+                    "Присоединение электронов",
+                    "Обмен ионами",
+                    "Растворение вещества"
+                ],
+                correct: 0
+            },
+            {
+                q: "11. Что такое комплексообразователь?",
+                options: [
+                    "Центральный атом или ион, вокруг которого располагаются лиганды",
+                    "Частица, отдающая электроны",
+                    "Растворитель в комплексном соединении",
+                    "Ион, находящийся во внешней сфере"
+                ],
+                correct: 0
+            },
+            {
+                q: "12. Какое соединение является комплексным?",
+                options: [
+                    "NaCl",
+                    "K4[Fe(CN)6]",
+                    "H2SO4",
+                    "CaCO3"
+                ],
+                correct: 1
+            },
+            {
+                q: "13. Какой элемент является самым распространенным в земной коре после кислорода?",
+                options: [
+                    "Углерод",
+                    "Кремний",
+                    "Алюминий",
+                    "Железо"
+                ],
+                correct: 1
+            },
+            {
+                q: "14. Какое вещество называется «угарным газом»?",
+                options: [
+                    "CO2",
+                    "CO",
+                    "CH4",
+                    "N2O"
+                ],
+                correct: 1
+            },
+            {
+                q: "15. Какую роль играют комплексные соединения в живых организмах?",
+                options: [
+                    "Пример: гемоглобин — комплекс Fe с порфирином",
+                    "Они не встречаются в живых организмах",
+                    "Пример: поваренная соль в клетках",
+                    "Они используются только для синтеза лекарств"
+                ],
+                correct: 0
+            }
+        ];
+
+        const STORAGE_KEY = 'geo_chem_final_test_v1';
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const blockedContainer = document.getElementById('blocked-container');
+        const scoreText = document.getElementById('score-text');
+        const gradeText = document.getElementById('grade-text');
+
+        function isAlreadyCompleted() {
+            try {
+                return localStorage.getItem(STORAGE_KEY) !== null;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function markAsCompleted() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    date: new Date().toISOString(),
+                    score: score,
+                    total: questions.length
+                }));
+            } catch (e) {}
+        }
+
+        if (isAlreadyCompleted()) {
+            quizContainer.style.display = 'none';
+            blockedContainer.style.display = 'block';
+        } else {
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResult();
+                return;
+            }
+
+            answered = false;
+            const q = questions[currentQuestion];
+            
+            let html = `<div class="question" id="q${currentQuestion}">
+                <h3>${q.q}</h3>
+                <ul class="options">`;
+            
+            q.options.forEach((opt, index) => {
+                html += `<li><button onclick="checkAnswer(${index})">${opt}</button></li>`;
+            });
+            
+            html += `</ul><div class="feedback" id="fb-${currentQuestion}"></div></div>`;
+            
+            quizContainer.innerHTML = html;
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll(`#q${currentQuestion} button`);
+            const feedback = document.getElementById(`fb-${currentQuestion}`);
+
+            buttons.forEach(btn => btn.disabled = true);
+            buttons[q.correct].classList.add('correct');
+
+            if (selectedIndex === q.correct) {
+                score++;
+                feedback.textContent = "✅ Верно!";
+                feedback.className = "feedback correct-text";
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                feedback.textContent = "❌ Неверно. Правильный ответ подсвечен зеленым.";
+                feedback.className = "feedback wrong-text";
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                renderQuestion();
+            }, 1800);
+        }
+
+        function showResult() {
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            
+            const total = questions.length;
+            const percent = Math.round((score / total) * 100);
+            
+            scoreText.textContent = `Вы ответили правильно на ${score} из ${total} вопросов (${percent}%).`;
+            
+            if (percent >= 90) {
+                gradeText.textContent = "Оценка: Отлично! Материал усвоен прекрасно.";
+                gradeText.style.color = "#27ae60";
+            } else if (percent >= 75) {
+                gradeText.textContent = "Оценка: Хорошо. Есть небольшие пробелы.";
+                gradeText.style.color = "#2980b9";
+            } else if (percent >= 50) {
+                gradeText.textContent = "Оценка: Удовлетворительно. Стоит повторить лекции.";
+                gradeText.style.color = "#f39c12";
+            } else {
+                gradeText.textContent = "Оценка: Неудовлетворительно. Нужно тщательно проработать материал.";
+                gradeText.style.color = "#c0392b";
+            }
+
+            markAsCompleted();
+        }
+    </script>
+</body>
+</html>
